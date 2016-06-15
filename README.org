@@ -1,7 +1,7 @@
 * Re-learning history with git
 ** What's not covered here
 This is not a git tutorial, there are tons of resources out there
-already that do a much better job than I can. Links below
+already that do a much better job than I can. For links, see [[#further-reading][Further Reading]]
 ** Why a distributed vcs
 *** You can work offline
 *** Experiments still deserve vcs
@@ -74,6 +74,9 @@ together. Alice calls her branch "logging", she calls Bob's repo
 Yes. The extra power does have a cost.
 
 ** Further reading
+:PROPERTIES:
+:CUSTOM_ID: further-reading
+:END:
 + [[http://hginit.com/00.html][Subversion re-education]] (on Mercurial's site, but applies just as
   well to git)
 + [[https://try.github.io/levels/1/challenges/1][Github's quick git tutorial]]
