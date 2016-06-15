@@ -22,8 +22,8 @@ project *and* still be able pull in changes from upstream.
 There can be (and usually are) many repositories that contain the same
 project.
 
-**** The repo has no global state or revision number
-Changes are put into a graph structure (DAG) where every node is a
+**** Q. How are changes tracked without a global state or revision number?
+A. Changes are put into a graph structure (DAG) where every node is a
 commit. Commits are identified by their SHA-1 hash, and each commit
 identifies the previous commit(s) by their hashes.
 
@@ -45,13 +45,13 @@ Subsections can be pushed or pulled (pulling requires read access on
 the remote repository, pushing requires write access on the remote
 respository).
 
-**** Q. How is access control not complete chaos?
+**** Q. How can you control access?
 A. A git repo is just a directory of files. Access is controlled
 exactly how you'd control remote access to any filesystem directory -
 with ssh authentication or http authentication, and also unix
 filesystem permissions.
 **** Q. How do you know what the "right" repo and branch is?
-In most cases, the same way as with any other VCS. The project website
+A. In most cases, the same way as with any other VCS. The project website
 points you to the repo.
 
 With DVCS, you can also pull changes from other repos, that may not be
@@ -60,18 +60,19 @@ sanctioned by the project owner.
 As for branches, by convention "master" is the default branch in
 git.
 **** Q. How do you keep track of all the repos and branches?
-Branches are basically just aliases for a commit hash.
+A. Branches are basically just aliases for a commit hash.
 
 "master" in my repo might point to a different hash than "master" in
 your repo. Git handles this by prefixing the name of the remote
-repository to the branch name. You choose the name for the remote
-repository.
+repository to the branch name. Your local repo has a list of remote
+repos it can pull from or push to. You add these yourself, by giving
+git the URL and an arbitrary name you can use to refer to it later.
 
 For example, Alice and Bob are working on a feature "logging"
 together. Alice calls her branch "logging", she calls Bob's repo
 "bob". In Alice's repo, Bob's branch is called "bob/logging".
 **** Q. Isn't distributed VCS more complex and harder to learn?
-Yes. The extra power does have a cost.
+A. Yes. The extra power does have a cost.
 
 ** Further reading
 :PROPERTIES:
