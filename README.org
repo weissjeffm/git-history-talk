@@ -4,18 +4,9 @@ This is not a git tutorial, there are tons of resources out there
 already that do a much better job than I can. For links, see [[#further-reading][Further Reading]]
 ** Why a distributed vcs
 *** You can work offline
-*** Experiments still deserve vcs
-**** Developers learn by doing
-**** Experiments often fail
-As developers, we benefit from experiments that fail. Our VCS should
-serve us just as well in experimentation, as for production code.
-
-In a distibuted vcs like git, you can commit whatever and whenever you
-want - it only affects your local copy.
-
-**** The collaborative and open source way
-You don't need anyone's permission to make changes to an open source
-project *and* still be able pull in changes from upstream.
+*** You can rewrite history
+*** You can make changes to someone else's project
+- and still easily merge in upstream changes later.
 
 ** What does it mean to be distributed
 *** there is no central authority
@@ -26,11 +17,6 @@ project.
 A. Changes are put into a graph structure (DAG) where every node is a
 commit. Commits are identified by their SHA-1 hash, and each commit
 identifies the previous commit(s) by their hashes.
-
-Important note: the previous commit(s) hash are part of the content of
-the commit. In other words, if you make a change on top of versionA,
-you'll get one hash, if you make the exact same change on top of
-versionB, you get a different hash.
 
 A git repository contains an entire graph (which may have many
 branches), but the filesystem only shows you one branch at a time.
@@ -92,9 +78,9 @@ A. Yes. The extra power does have a cost.
 ** What is rewriting history?
 Because git is distributed, you have your own copy of history. It's
 possible to alter your history without affecting anyone
-else. Rewriting history means, take some existing commits, "go back in
-time" to just before they were added, and automatically replay them
-again with some modifications. Those modifications might be:
+else. Rewriting history means, automatically replaying commits on top
+of some other commit, possibly with some modifications. Those
+modifications might be:
 
 + Change the comment of a commit
 + Change the order of commits
@@ -103,35 +89,30 @@ again with some modifications. Those modifications might be:
 + Squash multiple commits into one
 + Split a commit into multiple commits
 
+Another typical history rewrite is when someone else merged some
+changes while you were working on yours, and you want to base your
+changes on theirs, instead of whatever you originally checked
+out. (Rebase to master).
+
 ** Should you rewrite history?
 We definitely *can* rewrite history. Should we?
 
-*** What's the benefit?
-I personally don't think anyone should be forced to work under the
-expectation that they must publicly expose every commit they make. It
-means having no privacy, and discourages experimentation.
+*** What are the benefits?
++ Freedom to experiment and make mistakes, while still having full
+  power of version control
++ Faster, more effective review - easier to understand submissions if
+  you can review them logical commit by logical commit, instead of a
+  giant blob
++ bisect is effective - (binary search to find out which commit changed a
+  specific behavior). If your team always rebases then there are no
+  merge commits, and bisect is efficient.
++ Cherry pick - simple when a commit is a single logical change
++ blame - easier to figure out what the intent of a commit was when
+  it's a single logical change
 
-You don't always make changes in logical order that would make sense
-to anyone else. Does these sound familiar:
-
-+ You fix an unrelated bug you spotted while working a feature and
-  accidentally commit them together
-+ You commit something and then immediately realize it's wrong, and
-  change it back, and then realize you were actually right the first
-  time and add it back again.
-+ You move from working on one feature to another, but forget to
-  commit in between.
-+ You create a new file, but forget to add it to source control
-  before committing.
-
-Anyone who sees these commits later will be confused. They'll
-eventually figure it out of course, but why make it harder for them?
-
-These mistakes are so ridiculously common, that there's nothing others
-can learn from them. We already know these things are wrong, but it
-happens anyway. Making these mistakes public serves no purpose, except
-to make code review more difficult. I believe they should be fixed
-before they go public.
+*** What are the costs?
+After you've done it a dozen times, rebasing adds maybe 5-15% overhead
+vs just submitting your changes exactly as you originally typed them.
 
 *** When you shouldn't rewrite history
 If anyone else is watching a branch (pulling changes from it,
@@ -149,8 +130,7 @@ isolated from the original submission, so they can verify you followed
 their suggestion without reading the entire submission again. If you
 rewrite history, they can't do that. Git tracks "code changes", not
 "changes to code changes". For a tool that tracks the latter, see
-[[https://www.gerritcodereview.com/][Gerrit]]. I think Gerrit is worth using, but it's outside the scope of
-this talk.
+[[https://www.gerritcodereview.com/][Gerrit]]. 
 
 An approach that's easier on reviewers is to just tack another
 commit on the end, let them approve the changes, *then* rewrite
@@ -159,9 +139,9 @@ the approved submission. The only difference is the history will be
 easier to understand later.
 
 *** Is it lying?
-My esteemed colleague Paul Stadig once wrote an article about
-rewriting history called [[http://paul.stadig.name/2010/12/thou-shalt-not-lie-git-rebase-ammend.html][Thou shalt not lie]], which at first seems to
-outright oppose rewriting history, but there's an epilogue which says:
+Our colleague Paul Stadig once wrote an article about rewriting
+history called [[http://paul.stadig.name/2010/12/thou-shalt-not-lie-git-rebase-ammend.html][Thou shalt not lie]], which at first seems to outright
+oppose rewriting history, but there's an epilogue which says:
 
 #+BEGIN_QUOTE
 Other than integration branches, a good rule of thumb is that you
@@ -172,54 +152,21 @@ the world. This would limit these rewriting tools to uses locally to
 
 So I think we generally agree.
 
-I should stress that (as Paul warns) reorganizing your commits, and
-then not retesting them, is dangerous. I believe every single commit
-in production branches should be internally consistent, meaning the
-tests should pass. If you can't tease apart a large change into steps
-where all tests pass in each step, then it should be a single change.
+I should stress that (as Paul warns) if you reorganize your commits,
+you can't just assume that the new commits are consistent without
+testing. I believe every single commit in production branches should
+be internally consistent, meaning the tests should pass. If you can't
+tease apart a large change into steps where all tests pass in each
+step, then it should be a single change.
 
-Retesting everything manually is not recommended - there are CI tools
-like Jenkins that can do this for you, but Gerrit makes it even
-easier.
-
-*** Is it a waste of time?
-In my experience, no. After you've done it a few times, it adds maybe
-10-15% overhead vs just submitting your changes exactly as you
-originally typed them. The benefits are:
-
-+ Faster, more effective review - easier to understand submissions if
-  you can review them commit by commit instead of a giant blob
-+ bisect - (binary search to find out which commit changed a
-  specific behavior) every commit should be internally consistent so
-  you can build and test any commit.
-+ Cherry pick - simple when a commit is a single logical change
-+ blame - easier to figure out what the intent of a commit was when
-  it's a single logical change
+Automatic retesting is [[https://github.com/blog/2188-git-2-9-has-been-released][now better supported by git]]! (see: "Testing all
+the commits with 'rebase -x'"). Other tools can help with this too -
+Jenkins, Gerrit.
 
 ** Interactive rebase demo
 I created a little repo with with some changes I want to submit for
 review. I'll go through the process of cleaning it up with git's
 interactive rebase.
-
-
-*** Create an empty repo
-#+NAME: init
-#+BEGIN_SRC emacs-lisp
-(setq git-demo/dir (expand-file-name "my-test-project"))
-(magit-init git-demo/dir)
-#+END_SRC
-
-#+RESULTS: init
-
-*** Make some changes
-#+NAME change1
-#+BEGIN_SRC emacs-lisp
-(setq git-demo/file1 (concat (file-name-directory git-demo/dir) "file1.clj"))
-(find-file git-demo/file1)
-#+END_SRC
-
-#+RESULTS:
-: #<buffer file1.clj>
 
 
 * Where to find this file
