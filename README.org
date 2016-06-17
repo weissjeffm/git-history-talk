@@ -1,3 +1,7 @@
+The features of a distributed VCS (like git), how it handles history,
+how it enables you to rewrite history, and when/why you should do
+it. Finally will do an example rewrite (interactive rebase).
+
 * Re-learning history with git
 ** What's not covered here
 This is not a git tutorial, there are tons of resources out there
@@ -15,7 +19,7 @@ project.
 
 **** Q. How are changes tracked without a global state or revision number?
 A. Changes are put into a graph structure (DAG) where every node is a
-commit. Commits are identified by their SHA-1 hash, and each commit
+commit. Commits are identified by its SHA-1 hash, and each commit
 identifies the previous commit(s) by their hashes.
 
 A git repository contains an entire graph (which may have many
@@ -69,6 +73,10 @@ A. Yes. The extra power does have a cost.
 + [[https://try.github.io/levels/1/challenges/1][Github's quick git tutorial]]
 + [[http://git.or.cz/course/][Git crash courses]] (for basic commands and usage)
 + [[http://eagain.net/articles/git-for-computer-scientists/][Git for computer scientists]] (for conceptual overview)
++ [[http://ericsink.com/vcbe/html/bk01-toc.html][Version Control by Example]] 
+  + [[http://ericsink.com/vcbe/html/dvcs_advantages.html][DVCS Advantages]]
+  + [[http://ericsink.com/vcbe/html/directed_acyclic_graphs.html][DAG]]
+  + [[http://ericsink.com/vcbe/html/cryptographic_hashes.html][Hashes]]
 ** Git add-ons
 + [[https://git-scm.com/download/gui/linux][Graphical git clients]]
 + [[https://magit.vc/][Magit]] - what I use in the following demo
